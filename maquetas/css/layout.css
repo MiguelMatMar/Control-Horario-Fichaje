@@ -1,0 +1,117 @@
+:root {
+    --header-height: 64px;
+    --sidebar-width: 260px;
+    --bg-main: #f8fafc;
+    --border-color: #e2e8f0;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body { font-family: 'Inter', sans-serif; background: var(--bg-main); }
+
+/* 1. EL CONTENEDOR PADRE */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* 2. EL HEADER (Hijo directo de app-container) */
+.main-header {
+    height: var(--header-height);
+    width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+    background: #fff;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* 3. EL DIV QUE ENVUELVE SIDEBAR Y MAIN */
+.app-content {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    margin-top: var(--header-height); /* Deja espacio al header */
+    flex: 1;
+}
+
+/* 4. EL SIDEBAR (Hijo de app-content) */
+.sidebar {
+    background: #fff;
+    border-right: 1px solid var(--border-color);
+    height: calc(100vh - var(--header-height));
+    position: fixed;
+    width: var(--sidebar-width);
+    overflow-y: auto;
+}
+
+/* 5. EL MAIN (Hijo de app-content) */
+.main-content {
+    grid-column: 2; /* Obliga al main a ir a la segunda columna */
+    padding: 2.5rem;
+    min-height: 100vh;
+}
+
+/* 6. EL FOOTER (Fuera del grid, al final) */
+.admin-footer {
+    margin-left: var(--sidebar-width); /* Empuja el footer para que no lo tape el side */
+    padding: 2rem;
+    background: #fff;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+/* Rejilla de tarjetas */
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+/* Estilo de las cajas blancas */
+.admin-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* Tabla */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.admin-table th {
+    text-align: left;
+    padding: 1rem;
+    background: #f1f5f9;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.admin-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* Botón y Tag */
+.btn-primary {
+    background: #1e293b;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.tag-success {
+    background: #dcfce7;
+    color: #166534;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}

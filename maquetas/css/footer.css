@@ -1,0 +1,81 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+}
+.minimal-footer {
+    background-color: #5f85ab; /* O puedes usar #1a1a1a si lo prefieres oscuro */
+    padding: 60px 20px 30px;
+    border-top: 1px solid #eee;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    color: #333;
+    position: absolute;
+    z-index: 2;
+    width: 100%;
+}
+
+.footer-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.logo-text span {
+    color: #007bff; /* Color de acento, cámbialo al de tu .submenu-uno */
+}
+
+.footer-nav a {
+    text-decoration: none;
+    color: #666;
+    margin: 0 15px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.footer-nav a:hover {
+    color: #007bff;
+    text-shadow: 0 0 10px rgba(0,123,255,0.2);
+}
+
+.social-link {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    border: 2px solid #333;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    transition: 0.3s;
+}
+
+.social-link:hover {
+    background: #333;
+    color: #fff;
+}
+
+.copyright {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 0.8rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Responsive para celulares */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+}

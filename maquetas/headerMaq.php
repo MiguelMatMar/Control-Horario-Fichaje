@@ -1,3 +1,4 @@
+
 <header class="main-header">
     <div class="header-left">
         <button class="menu-toggle" aria-label="Abrir menú">
@@ -16,7 +17,6 @@
                 <i class="fas fa-bell"></i>
             </button>
             <button class="btn-logout" title="Cerrar Sesión">
-                <i class="fas fa-sign-out-alt"></i>
                 <span>Salir</span>
             </button>
         </div>
