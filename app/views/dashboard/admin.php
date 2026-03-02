@@ -1,43 +1,87 @@
-<!-- app/views/dashboard/admin.php -->
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard Admin</title>
-    <script src="../assets/js/sweetalert2.all.min.js"></script>
-</head>
-<body>
-    <h2>Dashboard Admin</h2>
-    <a href="../routes/web.php?controller=auth&action=logout">Cerrar sesión</a>
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-    <h3>Usuarios</h3>
-    <table border="1" id="usuariosTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Rol</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+if (!isset($_SESSION['user_id']) || $_SESSION['role_id'] != 1) {
+    echo "Acceso denegado";
+    exit;
+}
 
-    <script>
-        async function cargarUsuarios() {
-            const res = await fetch('../routes/web.php?controller=user&action=index');
-            const data = await res.json();
-            const tbody = document.querySelector('#usuariosTable tbody');
-            tbody.innerHTML = '';
+require_once __DIR__ . '/../partials/header.php';
+require_once __DIR__ . '/../partials/sidebar.php';
+?>
+<link rel="stylesheet" href="../../public/assets/css/admin.css">
+<main class="admin-main">
 
-            data.usuarios.forEach(u => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${u.id}</td><td>${u.nombre}</td><td>${u.email}</td><td>${u.role_id}</td>`;
-                tbody.appendChild(tr);
-            });
-        }
+    <section class="page-header">
+        <h1>Panel de Administración</h1>
+        <p>Resumen general del sistema</p>
+    </section>
 
-        cargarUsuarios();
-    </script>
-</body>
-</html>
+    <!-- Tarjetas resumen -->
+    <section class="admin-stats">
+        <div class="card">
+            <h3>Total empleados</h3>
+            <p id="totalUsers">-</p>
+        </div>
+
+        <div class="card">
+            <h3>Fichajes hoy</h3>
+            <p id="todayRecords">-</p>
+        </div>
+
+        <div class="card">
+            <h3>Horas extra esta semana</h3>
+            <p id="extraHours">-</p>
+        </div>
+    </section>
+
+    <!-- Filtros -->
+    <section class="admin-filters">
+        <h2>Filtrar registros</h2>
+
+        <form id="filterForm">
+            <select name="user_id" id="filterUser">
+                <option value="">Todos los usuarios</option>
+            </select>
+
+            <input type="date" name="fecha_inicio">
+            <input type="date" name="fecha_fin">
+
+            <button type="submit">Filtrar</button>
+        </form>
+
+        <button id="btnExport">Exportar CSV</button>
+    </section>
+
+    <!-- Tabla -->
+    <section class="admin-table">
+        <h2>Histórico de fichajes</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Tipo</th>
+                    <th>Fecha y hora</th>
+                </tr>
+            </thead>
+            <tbody id="recordsTable">
+                <!-- Se carga por AJAX -->
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Gráfico -->
+    <section class="admin-charts">
+        <h2>Resumen mensual</h2>
+        <canvas id="monthlyChart"></canvas>
+    </section>
+
+</main>
+
+<script src="/assets/js/admin.js"></script>
+
+<?php
+require_once __DIR__ . '/../partials/footer.php';
+?>

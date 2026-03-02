@@ -61,11 +61,14 @@ class AuthController
     ===================================================== */
     public function logout(): void
     {
-        session_start();
+        if(session_status() == PHP_SESSION_NONE){
+            session_start();
+        }
         session_unset();
         session_destroy();
 
-        header('Location: ../../index.php'); // Ajusta según tu estructura
+        header('Content-Type: application/json');
+        echo json_encode(['status'=>'success','message'=>'Has cerrado sesión']);
         exit;
     }
 
