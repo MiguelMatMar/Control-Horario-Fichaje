@@ -7,7 +7,6 @@ require_once __DIR__ . '/AuthController.php';
 enum roles: int {
     case Admin = 1;
     case Trabajador = 2;
-    case Cliente = 3;
 }
 
 class AdminController

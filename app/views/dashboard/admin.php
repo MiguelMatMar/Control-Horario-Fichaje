@@ -80,7 +80,7 @@ require_once __DIR__ . '/../partials/sidebar.php';
 
 </main>
 
-<script src="/assets/js/admin.js"></script>
+<script src="../../public/assets/js/admin.js"></script>
 
 <?php
 require_once __DIR__ . '/../partials/footer.php';

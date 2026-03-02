@@ -2,6 +2,10 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+enum rol : int{
+    case admin = 1;
+    case empleado = 2;
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -24,7 +28,7 @@ if (session_status() == PHP_SESSION_NONE) {
     <div class="user-info">
         <span>
             <?php echo $_SESSION['nombre'] ?? 'Usuario'; ?>
-            (<?php echo $_SESSION['role_id'] == 1 ? 'Administrador' : 'Empleado'; ?>)
+            (<?php echo $_SESSION['role_id'] == rol::admin->value ? 'Administrador' : 'Empleado'; ?>)
         </span>
 
         <button id="btnLogout" class="btn-logout">Cerrar sesión</button>

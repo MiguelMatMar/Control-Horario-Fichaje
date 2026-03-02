@@ -3,29 +3,29 @@
     <nav>
         <ul>
 
-            <?php if ($_SESSION['role_id'] == 1): ?>
+            <?php if ($_SESSION['role_id'] == rol::admin->value): ?>
 
                 <li>
                     <a href="/public/index.php">
-                        🏠 Dashboard Admin
+                        Dashboard Admin
                     </a>
                 </li>
 
                 <li>
                     <a href="#" id="menuUsers">
-                        👥 Gestión de usuarios
+                        Gestión de usuarios
                     </a>
                 </li>
 
                 <li>
                     <a href="#" id="menuRecords">
-                        📋 Registros globales
+                        Registros globales
                     </a>
                 </li>
 
                 <li>
                     <a href="#" id="menuExport">
-                        📤 Exportar datos
+                        Exportar datos
                     </a>
                 </li>
 
@@ -33,31 +33,31 @@
 
                 <li>
                     <a href="/public/index.php">
-                        🏠 Mi Panel
+                        Mi Panel
                     </a>
                 </li>
 
                 <li>
                     <a href="#" id="btnEntrada">
-                        🟢 Fichar entrada
+                        Fichar entrada
                     </a>
                 </li>
 
                 <li>
                     <a href="#" id="btnSalida">
-                        🔴 Fichar salida
+                        Fichar salida
                     </a>
                 </li>
 
                 <li>
                     <a href="#" id="btnDescansoInicio">
-                        ☕ Iniciar descanso
+                        Iniciar descanso
                     </a>
                 </li>
 
                 <li>
                     <a href="#" id="btnDescansoFin">
-                        ▶ Finalizar descanso
+                        Finalizar descanso
                     </a>
                 </li>
 
