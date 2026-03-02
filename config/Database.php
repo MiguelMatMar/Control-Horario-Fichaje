@@ -5,7 +5,7 @@ class Database {
 
     public function __construct() {
         $host = 'pruebadb.cnqg4w88uem0.eu-north-1.rds.amazonaws.com';
-        $db   = 'control-horario';
+        $db   = 'control_horario';
         $user = 'admin';
         $pass = '13122005Migue!';
         $charset = 'utf8mb4';
