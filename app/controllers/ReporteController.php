@@ -67,7 +67,7 @@ class ReporteController
 
         if (!$userId) {
             echo json_encode(['status'=>'error','message'=>'Usuario no válido']);
-            return;
+            exit;
         }
 
         $resumen = $this->fichajeModel->calcularHorasPorFecha($userId, $fecha);
@@ -95,7 +95,7 @@ class ReporteController
 
         if (!$userId) {
             echo json_encode(['status'=>'error','message'=>'Usuario no válido']);
-            return;
+            exit;
         }
 
         $resumen = $this->fichajeModel->resumenSemanal($userId, $fecha);
@@ -116,7 +116,7 @@ class ReporteController
 
         if (!$userId) {
             echo json_encode(['status'=>'error','message'=>'Usuario no válido']);
-            return;
+            exit;
         }
 
         $resumen = $this->fichajeModel->resumenMensual($userId, $fecha);

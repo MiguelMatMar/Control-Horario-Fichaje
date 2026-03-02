@@ -23,7 +23,7 @@ class FichajeController
 
         if (!AuthController::checkAuth()) {
             echo json_encode(['status'=>'error','message'=>'Debes iniciar sesión']);
-            return;
+            exit;
         }
 
         $tipo = $_POST['tipo'] ?? '';
@@ -55,7 +55,7 @@ class FichajeController
 
         if (!AuthController::checkAuth()) {
             echo json_encode(['status'=>'error','message'=>'Debes iniciar sesión']);
-            return;
+            exit;
         }
 
         $userId = $_SESSION['user_id'];
@@ -77,7 +77,7 @@ class FichajeController
 
         if (!AuthController::checkAuth()) {
             echo json_encode(['status'=>'error','message'=>'Debes iniciar sesión']);
-            return;
+            exit;
         }
 
         $userId = $_SESSION['user_id'];

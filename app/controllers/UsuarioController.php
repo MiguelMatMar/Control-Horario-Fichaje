@@ -1,5 +1,7 @@
 <?php
-
+if(session_status() == PHP_SESSION_NONE){
+    session_start();
+}
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/AuthController.php';
 
@@ -56,7 +58,7 @@ class UserController
 
         if (!$nombre || !$email || !$password) {
             echo json_encode(['status'=>'error','message'=>'Todos los campos son obligatorios']);
-            return;
+            exit;
         }
 
         if ($this->userModel->create($nombre, $email, $password, $role_id)) {
@@ -82,7 +84,7 @@ class UserController
 
         if (!$id || !$nombre || !$email) {
             echo json_encode(['status'=>'error','message'=>'Todos los campos son obligatorios']);
-            return;
+            exit;
         }
 
         if ($this->userModel->update($id, $nombre, $email, $role_id)) {
@@ -105,7 +107,7 @@ class UserController
 
         if (!$id) {
             echo json_encode(['status'=>'error','message'=>'ID inválido']);
-            return;
+            exit;
         }
 
         if ($this->userModel->toggleActive($id, $activo)) {
@@ -126,7 +128,7 @@ class UserController
         $id = intval($_POST['id'] ?? 0);
         if (!$id) {
             echo json_encode(['status'=>'error','message'=>'ID inválido']);
-            return;
+            exit;
         }
 
         if ($this->userModel->delete($id)) {

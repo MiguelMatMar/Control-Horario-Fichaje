@@ -1,5 +1,7 @@
 <?php
-
+if(session_status() == PHP_SESSION_NONE){
+    session_start();
+}
 require_once __DIR__ . '/../models/User.php';
 
 class AuthController
@@ -28,7 +30,7 @@ class AuthController
                 'status' => 'error',
                 'message' => 'Debes completar todos los campos'
             ]);
-            return;
+            exit;
         }
 
         $user = $this->userModel->verifyPassword($email, $password);
@@ -38,7 +40,7 @@ class AuthController
                 'status' => 'error',
                 'message' => 'Email o contraseña incorrectos, o usuario inactivo'
             ]);
-            return;
+            exit;
         }
 
         // Guardar sesión

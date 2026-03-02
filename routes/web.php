@@ -3,7 +3,7 @@
 
 // Cargar controladores
 require_once __DIR__ . '/../app/controllers/AuthController.php';
-require_once __DIR__ . '/../app/controllers/UserController.php';
+require_once __DIR__ . '/../app/controllers/UsuarioController.php';
 require_once __DIR__ . '/../app/controllers/FichajeController.php';
 require_once __DIR__ . '/../app/controllers/ReporteController.php';
 
