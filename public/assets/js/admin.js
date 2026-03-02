@@ -63,7 +63,6 @@ function logoutBtn() {
     });
 }
 
-logoutBtn();
 
 // ===============================
 // CARGAR USUARIOS EN SELECT
