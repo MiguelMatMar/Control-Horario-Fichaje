@@ -181,6 +181,26 @@ class User
     }
 
     /* =====================================================
+       Obtener rol de usuario
+    ===================================================== */
+
+    public function getUserRol(int $id): ?string
+    {
+        $sql = "SELECT r.nombre AS rol
+                FROM users u
+                JOIN roles r ON u.role_id = r.id
+                WHERE u.id = :id
+                LIMIT 1";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id' => $id]);
+
+        $rol = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $rol ? $rol['rol'] : null;
+    }
+
+    /* =====================================================
        Cambiar contraseña
     ===================================================== */
 
