@@ -1,0 +1,45 @@
+/app
+    /controllers
+        AuthController.php
+        DashboardController.php
+        FichajeController.php
+        UsuarioController.php
+        AdminController.php
+        ReporteController.php
+
+    /models
+        User.php
+        Role.php
+        Fichaje.php
+        Descanso.php
+        Reporte.php
+
+    /views
+        /auth
+            login.php
+        /dashboard
+            empleado.php
+            admin.php
+        /fichajes
+            historial.php
+        /admin
+            usuarios.php
+            registros.php
+        /partials
+            header.php
+            footer.php
+            sidebar.php
+
+/config
+    Database.php
+    config.php
+
+/public
+    index.php
+    assets/
+        css/
+        js/
+        charts.js
+
+/routes
+    web.php
