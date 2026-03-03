@@ -70,6 +70,11 @@ require_once __DIR__ . '/../partials/sidebar.php';
                 <!-- Se carga por AJAX -->
             </tbody>
         </table>
+        <div id="paginationControls" class="pagination">
+            <button id="prevPage" disabled>Anterior</button>
+            <span id="currentPage">1</span>
+            <button id="nextPage">Siguiente</button>
+        </div>
     </section>
 
     <!-- Gráfico -->

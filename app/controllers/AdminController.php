@@ -4,7 +4,6 @@ require_once __DIR__ . '/../models/Fichaje.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/AuthController.php';
 
-
 class AdminController
 {
     private Fichaje $fichajeModel;
@@ -12,7 +11,6 @@ class AdminController
 
     public function __construct()
     {
-        // Solo admins
         if (!AuthController::checkAuth() || !AuthController::checkRole(roles::Admin->value)) {
             header('Content-Type: application/json');
             echo json_encode(['status'=>'error','message'=>'Acceso denegado']);
@@ -23,19 +21,21 @@ class AdminController
         $this->userModel = new User();
     }
 
-    /* =====================================================
-       Listar fichajes globales
-       GET: user_id (opcional), fechaInicio, fechaFin
-    ===================================================== */
+    // =========================
+    // Listar fichajes
+    // =========================
     public function listarFichajes(): void
     {
         header('Content-Type: application/json');
 
         $userId = isset($_GET['user_id']) ? intval($_GET['user_id']) : null;
-        $fechaInicio = $_GET['fechaInicio'] ?? null;
-        $fechaFin = $_GET['fechaFin'] ?? null;
+        $fechaInicio = $_GET['fecha_inicio'] ?? null;
+        $fechaFin = $_GET['fecha_fin'] ?? null;
+        $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;
 
         $fichajes = [];
+
         if ($userId) {
             $fichajes = $this->fichajeModel->getFichajes($userId, $fechaInicio, $fechaFin);
         } else {
@@ -46,18 +46,41 @@ class AdminController
             }
         }
 
-        echo json_encode(['status'=>'success','fichajes'=>$fichajes]);
+        $total = count($fichajes);
+        $offset = ($page - 1) * $limit;
+        $paginated = array_slice($fichajes, $offset, $limit);
+        $hasMore = ($offset + $limit) < $total;
+
+        echo json_encode([
+            'status' => 'success',
+            'fichajes' => $paginated,
+            'total' => $total,
+            'page' => $page,
+            'hasMore' => $hasMore
+        ]);
         exit;
     }
 
-    /* =====================================================
-       Resumen diario global o por usuario
-       GET: user_id (opcional), fecha
-    ===================================================== */
+    // =========================
+    // Listar usuarios
+    // =========================
+    public function listarUsuarios(): void
+    {
+        header('Content-Type: application/json');
+        $usuarios = $this->userModel->getAll();
+        echo json_encode([
+            'status' => 'success',
+            'total' => count($usuarios)
+        ]);
+        exit;
+    }
+
+    // =========================
+    // Resumen diario
+    // =========================
     public function resumenDiario(): void
     {
         header('Content-Type: application/json');
-
         $userId = isset($_GET['user_id']) ? intval($_GET['user_id']) : null;
         $fecha = $_GET['fecha'] ?? date('Y-m-d');
 
@@ -76,14 +99,12 @@ class AdminController
         exit;
     }
 
-    /* =====================================================
-       Resumen semanal global o por usuario
-       GET: user_id (opcional), fecha
-    ===================================================== */
+    // =========================
+    // Resumen semanal
+    // =========================
     public function resumenSemanal(): void
     {
         header('Content-Type: application/json');
-
         $userId = isset($_GET['user_id']) ? intval($_GET['user_id']) : null;
         $fecha = $_GET['fecha'] ?? date('Y-m-d');
 
@@ -102,14 +123,12 @@ class AdminController
         exit;
     }
 
-    /* =====================================================
-       Resumen mensual global o por usuario
-       GET: user_id (opcional), fecha
-    ===================================================== */
+    // =========================
+    // Resumen mensual
+    // =========================
     public function resumenMensual(): void
     {
         header('Content-Type: application/json');
-
         $userId = isset($_GET['user_id']) ? intval($_GET['user_id']) : null;
         $fecha = $_GET['fecha'] ?? date('Y-m-d');
 
@@ -128,10 +147,9 @@ class AdminController
         exit;
     }
 
-    /* =====================================================
-       Exportar fichajes a CSV global o por usuario
-       GET: user_id (opcional), fechaInicio, fechaFin
-    ===================================================== */
+    // =========================
+    // Exportar CSV
+    // =========================
     public function exportarCSV(): void
     {
         $userId = isset($_GET['user_id']) ? intval($_GET['user_id']) : null;
@@ -170,44 +188,29 @@ class AdminController
     }
 }
 
+// =========================
+// Inicialización
+// =========================
+if (session_status() === PHP_SESSION_NONE) session_start();
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Asegurarse de definir los roles si aún no lo hiciste
 enum roles: int {
     case Admin = 1;
     case Trabajador = 2;
     case Cliente = 3;
 }
 
-// Instanciar el controlador
 $action = $_GET['action'] ?? '';
 $adminController = new AdminController();
 
-// Ejecutar acción según switch
 switch ($action) {
-    case 'listarFichajes':
-        $adminController->listarFichajes();
-        break;
-    case 'resumenDiario':
-        $adminController->resumenDiario();
-        break;
-    case 'resumenSemanal':
-        $adminController->resumenSemanal();
-        break;
-    case 'resumenMensual':
-        $adminController->resumenMensual();
-        break;
-    case 'exportarCSV':
-        $adminController->exportarCSV();
-        break;
+    case 'listarFichajes': $adminController->listarFichajes(); break;
+    case 'resumenDiario': $adminController->resumenDiario(); break;
+    case 'resumenSemanal': $adminController->resumenSemanal(); break;
+    case 'resumenMensual': $adminController->resumenMensual(); break;
+    case 'exportarCSV': $adminController->exportarCSV(); break;
+    case 'listarUsuarios': $adminController->listarUsuarios(); break;
     default:
         header('Content-Type: application/json');
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Acción no válida'
-        ]);
+        echo json_encode(['status'=>'error','message'=>'Acción no válida']);
         exit;
 }
