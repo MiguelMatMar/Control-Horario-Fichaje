@@ -141,7 +141,7 @@ if ($tipoUltimo === 'entrada' || $tipoUltimo === 'fin_descanso') {
 
             try {
                 // Ruta al controlador desde app/views/dashboard/
-                const response = await fetch('../../controllers/FichajeController.php?action=registrar', {
+                const response = await fetch('../app/controllers/FichajeController.php?action=registrar', {
                     method: 'POST',
                     body: formData
                 });
@@ -171,15 +171,28 @@ if ($tipoUltimo === 'entrada' || $tipoUltimo === 'fin_descanso') {
         });
 
         <?php if ($tipoUltimo === 'entrada' || $tipoUltimo === 'fin_descanso'): ?>
-            let totalSegundos = <?php echo (($resumenHoy['horas_trabajadas'] ?? 0) * 3600); ?>;
-            setInterval(() => {
-                totalSegundos++;
-                const hrs = Math.floor(totalSegundos / 3600).toString().padStart(2, '0');
-                const mins = Math.floor((totalSegundos % 3600) / 60).toString().padStart(2, '0');
-                const secs = (totalSegundos % 60).toString().padStart(2, '0');
-                document.getElementById('timer').textContent = `${hrs}:${mins}:${secs}`;
-            }, 1000);
-        <?php endif; ?>
+
+<?php
+$segundosIniciales = 0;
+
+if ($ultimoFichaje) {
+    $inicio = strtotime($ultimoFichaje['fecha_hora']);
+    $ahora = time();
+    $segundosIniciales = $ahora - $inicio;
+}
+?>
+
+let totalSegundos = <?php echo $segundosIniciales; ?>;
+
+setInterval(() => {
+    totalSegundos++;
+    const hrs = Math.floor(totalSegundos / 3600).toString().padStart(2, '0');
+    const mins = Math.floor((totalSegundos % 3600) / 60).toString().padStart(2, '0');
+    const secs = (totalSegundos % 60).toString().padStart(2, '0');
+    document.getElementById('timer').textContent = `${hrs}:${mins}:${secs}`;
+}, 1000);
+
+<?php endif; ?>
     </script>
 </body>
 </html>
