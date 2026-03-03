@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href="../../public/assets/css/login.css">
+    <link rel="stylesheet" href="./assets/css/login.css"><!--Cambiar-->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -40,6 +40,6 @@
             <p>&copy; 2026 Control System. Todos los derechos reservados.</p>
         </footer>
     </div>
-    <script src="../../public/assets/js/login.js"></script>
+    <script src="../../../public/assets/js/login.js"></script>
 </body>
 </html>
