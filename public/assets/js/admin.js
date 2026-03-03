@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     totalUsuarios();
     todayRecords();
     extraHours();
+    loadRecords(1);
 
     let filterForm = document.getElementById("filterForm");
     if (filterForm) {
@@ -44,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // VARIABLES PAGINACIÓN
 // ===============================
 let currentPage = 1;
-const recordsPerPage = 10;
+let recordsPerPage = 10;
 
 // ===============================
 // Cargar horas extras de esta semana
@@ -57,8 +58,8 @@ function extraHours() {
         .then(data => {
             if (data.status === "success") {
                 let totalExtra = 0;
-                const jornada = 8; // horas normales por día
-                const diasSemana = 5; // lunes a viernes
+                let jornada = 8; // horas normales por día
+                let diasSemana = 5; // lunes a viernes
 
                 for (let userData of Object.values(data.resumen)) {
                     if (Array.isArray(userData)) {
@@ -119,7 +120,7 @@ function totalUsuarios() {
 // BOTON LOGOUT
 // ===============================
 function logoutBtn() {
-    let logOutBtn = document.getElementById('logoutBtn');
+    let logOutBtn = document.getElementById('btnLogout');
     if (!logOutBtn) return;
 
     logOutBtn.addEventListener('click', (e) => {
@@ -135,7 +136,7 @@ function logoutBtn() {
                         text: data.message,
                         timer: 1500,
                         showConfirmButton: false
-                    }).then(() => window.location.href = '/public/index');
+                    }).then(() => window.location.href = '/public/index.php');
                 } else {
                     Swal.fire('Error', 'No se pudo cerrar sesión', 'error');
                 }
@@ -175,9 +176,6 @@ function loadStats() {
     fetch("/app/controllers/AdminController.php?action=resumenSemanal")
         .then(response => response.json())
         .then(data => {
-            if (data.status === "success") {
-                console.log("Resumen semanal:", data.resumen);
-            }
         })
         .catch(error => console.error("Error cargando stats:", error));
 }

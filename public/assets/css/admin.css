@@ -26,7 +26,10 @@ body {
     align-items: center;
     padding: 0 20px;
 }
-
+.header-right{
+    display: flex;
+    gap: 15px;
+}
 .main-header h2 {
     font-size: 18px;
     font-weight: 600;
@@ -113,6 +116,16 @@ body {
 
 .page-header p {
     color: #6b7280;
+}
+.nextPage, .prevPage{
+    padding: 7px 15px;
+    color: white;
+    background-color: #2563eb;
+    border: none;
+    border-radius: 5px;
+    &:hover{
+        cursor: pointer;
+    }
 }
 
 /* ===============================
