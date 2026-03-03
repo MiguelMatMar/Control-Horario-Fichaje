@@ -39,7 +39,7 @@ function logoutBtn() {
     logOutBtn.addEventListener('click', (e) => {
         e.preventDefault();
 
-        fetch('../../controllers/AuthController.php?action=logout', {
+        fetch('/../app/controllers/AuthController.php?action=logout', {
             method: 'POST',
         })
         .then(response => response.json())
@@ -65,24 +65,23 @@ function logoutBtn() {
 
 
 // ===============================
-// CARGAR USUARIOS EN SELECT
+// CARGAR USUARIOS
 // ===============================
 
 function loadUsers() {
 
-    fetch("/routes/web.php?controller=user&action=list")
+    fetch("/app/controllers/UsuarioController.php?action=index")
         .then(response => response.json())
         .then(data => {
 
             let select = document.getElementById("filterUser");
-
             if (!select) return;
 
             select.innerHTML = '<option value="">Todos los usuarios</option>';
 
             if (data.status === "success") {
 
-                data.users.forEach(function (user) {
+                data.usuarios.forEach(function (user) {
 
                     let option = document.createElement("option");
                     option.value = user.id;
@@ -103,16 +102,12 @@ function loadUsers() {
 
 function loadStats() {
 
-    fetch("/routes/web.php?controller=admin&action=stats")
+    fetch("/app/controllers/AdminController.php?action=resumenSemanal")
         .then(response => response.json())
         .then(data => {
 
             if (data.status === "success") {
-
-                document.getElementById("totalUsers").textContent = data.total_users;
-                document.getElementById("todayRecords").textContent = data.today_records;
-                document.getElementById("extraHours").textContent = data.week_extra_hours + " h";
-
+                console.log("Resumen semanal:", data.resumen);
             }
 
         })
@@ -121,32 +116,30 @@ function loadStats() {
 
 
 // ===============================
-// CARGAR TABLA DE FICHAJES
+// CARGAR FICHAJES
 // ===============================
 
 function loadRecords() {
 
     let form = document.getElementById("filterForm");
-    let formData = new FormData(form);
 
-    fetch("/routes/web.php?controller=admin&action=records", {
-        method: "POST",
-        body: formData
-    })
+    fetch("/app/controllers/AdminController.php?action=listarFichajes")
         .then(response => response.json())
         .then(data => {
 
             let tbody = document.getElementById("recordsTable");
+            if (!tbody) return;
+
             tbody.innerHTML = "";
 
             if (data.status === "success") {
 
-                data.records.forEach(function (record) {
+                data.fichajes.forEach(function (record) {
 
                     let row = document.createElement("tr");
 
                     row.innerHTML = `
-                        <td>${record.nombre}</td>
+                        <td>${record.user_id}</td>
                         <td>${record.tipo}</td>
                         <td>${record.fecha_hora}</td>
                     `;
@@ -170,28 +163,9 @@ function loadRecords() {
 function exportCSV() {
 
     let form = document.getElementById("filterForm");
-    let formData = new FormData(form);
+    let params = new URLSearchParams(new FormData(form));
 
-    fetch("/routes/web.php?controller=admin&action=export", {
-        method: "POST",
-        body: formData
-    })
-        .then(response => response.blob())
-        .then(blob => {
-
-            let url = window.URL.createObjectURL(blob);
-            let a = document.createElement("a");
-            a.href = url;
-            a.download = "exportacion_fichajes.csv";
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-
-        })
-        .catch(error => {
-            Swal.fire("Error", "No se pudo exportar el archivo", "error");
-            console.error("Error exportando:", error);
-        });
+    window.location.href = "/routes/web.php?controllerName=admin&action=exportarCSV&" + params.toString();
 
 }
 
@@ -202,7 +176,7 @@ function exportCSV() {
 
 function loadMonthlyChart() {
 
-    fetch("/routes/web.php?controller=admin&action=monthlySummary")
+    fetch("/app/controllers/AdminController.php?action=resumenMensual")
         .then(response => response.json())
         .then(data => {
 
@@ -213,19 +187,14 @@ function loadMonthlyChart() {
             new Chart(ctx, {
                 type: "bar",
                 data: {
-                    labels: data.labels,
+                    labels: Object.keys(data.resumen),
                     datasets: [{
                         label: "Horas trabajadas",
-                        data: data.values
+                        data: Object.values(data.resumen)
                     }]
                 },
                 options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: true
-                        }
-                    }
+                    responsive: true
                 }
             });
 

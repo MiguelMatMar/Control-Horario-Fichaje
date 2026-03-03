@@ -10,7 +10,7 @@ enum roles: int{
     case Trabajador = 2;
     case Cliente = 3;
 }
-class UserController
+class UsuarioController
 {
     private User $userModel;
 
@@ -139,30 +139,30 @@ class UserController
     }
 }
 
-/* =====================================================
-   Punto de entrada para rutas de usuario
-===================================================== */
 $action = $_GET['action'] ?? '';
-$controller = new UserController();
+$usuarioController = new UsuarioController();
 
-switch ($action) {
+switch($action){
     case 'index':
-        $controller->index();
+        $usuarioController->index();
         break;
     case 'crear':
-        $controller->crear();
+        $usuarioController->crear();
         break;
     case 'editar':
-        $controller->editar();
+        $usuarioController->editar();
         break;
     case 'toggle':
-        $controller->toggleActivo();
+        $usuarioController->toggleActivo();
         break;
     case 'eliminar':
-        $controller->eliminar();
+        $usuarioController->eliminar();
         break;
     default:
         header('Content-Type: application/json');
-        echo json_encode(['status'=>'error','message'=>'Acción no válida']);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Accion no valida'
+        ]);
         break;
 }

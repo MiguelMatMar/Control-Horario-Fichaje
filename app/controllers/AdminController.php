@@ -4,10 +4,6 @@ require_once __DIR__ . '/../models/Fichaje.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/AuthController.php';
 
-enum roles: int {
-    case Admin = 1;
-    case Trabajador = 2;
-}
 
 class AdminController
 {
@@ -51,6 +47,7 @@ class AdminController
         }
 
         echo json_encode(['status'=>'success','fichajes'=>$fichajes]);
+        exit;
     }
 
     /* =====================================================
@@ -76,6 +73,7 @@ class AdminController
         }
 
         echo json_encode(['status'=>'success','fecha'=>$fecha,'resumen'=>$resumen]);
+        exit;
     }
 
     /* =====================================================
@@ -101,6 +99,7 @@ class AdminController
         }
 
         echo json_encode(['status'=>'success','resumen'=>$resumen]);
+        exit;
     }
 
     /* =====================================================
@@ -126,6 +125,7 @@ class AdminController
         }
 
         echo json_encode(['status'=>'success','resumen'=>$resumen]);
+        exit;
     }
 
     /* =====================================================
@@ -170,30 +170,44 @@ class AdminController
     }
 }
 
-/* =====================================================
-   Punto de entrada para rutas admin
-===================================================== */
-$action = $_GET['action'] ?? '';
-$controller = new AdminController();
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Asegurarse de definir los roles si aún no lo hiciste
+enum roles: int {
+    case Admin = 1;
+    case Trabajador = 2;
+    case Cliente = 3;
+}
+
+// Instanciar el controlador
+$action = $_GET['action'] ?? '';
+$adminController = new AdminController();
+
+// Ejecutar acción según switch
 switch ($action) {
     case 'listarFichajes':
-        $controller->listarFichajes();
+        $adminController->listarFichajes();
         break;
     case 'resumenDiario':
-        $controller->resumenDiario();
+        $adminController->resumenDiario();
         break;
     case 'resumenSemanal':
-        $controller->resumenSemanal();
+        $adminController->resumenSemanal();
         break;
     case 'resumenMensual':
-        $controller->resumenMensual();
+        $adminController->resumenMensual();
         break;
     case 'exportarCSV':
-        $controller->exportarCSV();
+        $adminController->exportarCSV();
         break;
     default:
         header('Content-Type: application/json');
-        echo json_encode(['status'=>'error','message'=>'Acción no válida']);
-        break;
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Acción no válida'
+        ]);
+        exit;
 }

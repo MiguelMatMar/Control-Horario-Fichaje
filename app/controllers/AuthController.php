@@ -102,9 +102,4 @@ if ($action === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $auth->login();
 } elseif ($action === 'logout') {
     $auth->logout();
-} else {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Acción no válida'
-    ]);
 }

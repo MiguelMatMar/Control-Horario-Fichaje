@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role_id'] != 1) {
 require_once __DIR__ . '/../partials/header.php';
 require_once __DIR__ . '/../partials/sidebar.php';
 ?>
-<link rel="stylesheet" href="../../public/assets/css/admin.css">
+<link rel="stylesheet" href="/../public/assets/css/admin.css">
 <main class="admin-main">
 
     <section class="page-header">
@@ -43,7 +43,7 @@ require_once __DIR__ . '/../partials/sidebar.php';
 
         <form id="filterForm">
             <select name="user_id" id="filterUser">
-                <option value="">Todos los usuarios</option>
+                
             </select>
 
             <input type="date" name="fecha_inicio">
@@ -80,7 +80,7 @@ require_once __DIR__ . '/../partials/sidebar.php';
 
 </main>
 
-<script src="../../public/assets/js/admin.js"></script>
+<script src="/../public/assets/js/admin.js"></script>
 
 <?php
 require_once __DIR__ . '/../partials/footer.php';

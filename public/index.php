@@ -31,3 +31,14 @@ switch ($_SESSION['role_id']) {
         echo "Rol desconocido";
         break;
 }
+// Según rol, redirigir al dashboard correspondiente
+switch ($_SESSION['role_id']) {
+    case roles::Admin->value: // Admin
+        header('Location: /../app/views/dashboard/admin.php');
+        exit;
+    case roles::Trabajador->value: // Trabajador
+        header('Location: /../app/views/dashboard/empleado.php');
+    default:
+        echo "Rol desconocido";
+        break;
+}
