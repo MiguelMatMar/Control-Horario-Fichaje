@@ -28,6 +28,7 @@ $nombreUsuario = htmlspecialchars($_SESSION['nombre'] ?? 'Usuario');
     <title>TimeControl - Administración</title>
     <link rel="stylesheet" href="/public/assets/css/admin.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
