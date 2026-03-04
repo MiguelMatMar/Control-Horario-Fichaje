@@ -125,7 +125,8 @@ class Fichaje
 
         $sql = "SELECT COUNT(*) 
                 FROM fichajes 
-                WHERE DATE(fecha_hora) = :hoy";
+                WHERE DATE(fecha_hora) = :hoy 
+                AND tipo = 'entrada'";
 
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':hoy', $hoy);
