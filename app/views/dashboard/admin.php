@@ -70,12 +70,6 @@ $nombreUsuario = htmlspecialchars($_SESSION['nombre'] ?? 'Usuario');
                     </a>
                 </li>
                 <li>
-                    <a href="#" id="menuExport">
-
-                        <span>Exportar CSV</span>
-                    </a>
-                </li>
-                <li>
                     <a href="#">
                         <span>Informes</span>
                     </a>

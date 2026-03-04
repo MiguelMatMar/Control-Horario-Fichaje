@@ -202,7 +202,7 @@ function loadRecords(page = 1) {
                 data.fichajes.forEach(function (record) {
                     let row = document.createElement("tr");
                     row.innerHTML = `
-                        <td>${record.user_id}</td>
+                        <td>${record.usuario}</td>
                         <td>${record.tipo}</td>
                         <td>${record.fecha_hora}</td>
                     `;
@@ -233,7 +233,7 @@ function exportCSV() {
     let form = document.getElementById("filterForm");
     let params = new URLSearchParams(new FormData(form));
 
-    window.location.href = "/routes/web.php?controllerName=admin&action=exportarCSV&" + params.toString();
+    window.location.href = "/app/controllers/AdminController.php?action=exportarCSV&" + params.toString();
 }
 
 // ===============================

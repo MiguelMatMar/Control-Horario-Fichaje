@@ -46,6 +46,12 @@ class AdminController
             }
         }
 
+        foreach ($fichajes as &$f) {
+            $usuario = $this->userModel->findById($f['user_id']);
+            $f['usuario'] = $usuario['nombre'] ?? 'Desconocido';
+            unset($f['user_id']);
+        }
+
         $total = count($fichajes);
         $offset = ($page - 1) * $limit;
         $paginated = array_slice($fichajes, $offset, $limit);
@@ -167,20 +173,22 @@ class AdminController
             }
         }
 
+        ob_clean();
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="fichajes_admin.csv"');
 
         $output = fopen('php://output', 'w');
-        fputcsv($output, ['ID','Usuario','Tipo','FechaHora']);
+        fputcsv($output, ['ID','Usuario','Tipo','FechaHora'], ';', '"', '\\');
+        
 
         foreach ($fichajes as $f) {
             $usuario = $this->userModel->findById($f['user_id']);
             fputcsv($output, [
                 $f['id'],
-                $usuario['nombre'] ?? 'Desconocido',
+                $usuario['nombre'],
                 $f['tipo'],
                 $f['fecha_hora']
-            ]);
+            ], ';', '"', '\\');
         }
 
         fclose($output);
