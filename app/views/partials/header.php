@@ -35,14 +35,11 @@ if (!enum_exists('rol')) {
         </div>
         
         <div class="header-actions">
-            <button class="btn-icon" title="Notificaciones">
-                <i class="fas fa-bell"></i>
-            </button>
             
-            <button id="btnLogout" class="btn-logout" title="Cerrar Sesión">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Salir</span>
-            </button>
+        <button type="button" id="btnLogout" class="btn-logout" title="Cerrar Sesión">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Salir</span>
+        </button>
         </div>
     </div>
 </header>
