@@ -112,10 +112,10 @@ class User
     public function getAll(): array
     {
         $sql = "SELECT u.id, u.nombre, u.email, u.activo, r.nombre AS rol
-                FROM users u
-                JOIN roles r ON u.role_id = r.id
-                ORDER BY u.created_at DESC";
-
+            FROM users u
+            JOIN roles r ON u.role_id = r.id
+            WHERE u.role_id = 2
+            ORDER BY u.created_at DESC";
         $stmt = $this->db->query($sql);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
