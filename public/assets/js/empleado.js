@@ -75,20 +75,23 @@ async function ejecutarFichaje(tipo) {
                 // Inicio de jornada: reiniciar y arrancar cronómetro
                 ultimoFichajeSegundos = 0;
                 iniciarCronometro();
+                setTimeout(() => location.reload(), 100);
             } else if(tipo === 'inicio_descanso') {
                 // Pausa: detener cronómetro y guardar tiempo
                 if(cronometroInterval) {
                     clearInterval(cronometroInterval);
                     localStorage.setItem('ultimoFichajeSegundos', ultimoFichajeSegundos);
+                    setTimeout(() => location.reload(), 100);
                 }
             } else if(tipo === 'fin_descanso') {
                 // Fin de descanso: continuar cronómetro desde tiempo guardado
                 iniciarCronometro();
+                setTimeout(() => location.reload(), 100);
             } else if(tipo === 'salida') {
                 // Salida: detener cronómetro, limpiar localStorage y recargar página
                 if(cronometroInterval) clearInterval(cronometroInterval);
                 localStorage.removeItem('ultimoFichajeSegundos');
-                setTimeout(() => location.reload(), 500); // Pequeño delay para que se vea Swal
+                setTimeout(() => location.reload(), 100); // Pequeño delay para que se vea Swal
             }
 
             // Actualizar botones
