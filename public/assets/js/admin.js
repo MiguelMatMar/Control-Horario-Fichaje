@@ -13,6 +13,13 @@ document.addEventListener("DOMContentLoaded", function () {
     extraHours();
     loadRecords(1);
 
+    setInterval(() => { // Actualizar cada minuto
+        loadRecords();
+        totalUsuarios();
+        todayRecords();
+        extraHours();
+    }, 60000);
+
     let filterForm = document.getElementById("filterForm");
     if (filterForm) {
         filterForm.addEventListener("submit", function (e) {
