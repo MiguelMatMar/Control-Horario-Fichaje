@@ -81,22 +81,17 @@ function extraHours() {
 // Fichajes de hoy
 // ===============================
 function todayRecords() {
-    let today = new Date().toISOString().split('T')[0];
 
-    fetch(`/app/controllers/AdminController.php?action=resumenDiario&fecha=${today}`)
+    fetch("/app/controllers/AdminController.php?action=fichajeHoy")
         .then(response => response.json())
         .then(data => {
-            if (data.status === "success") {
-                let totalHoras = 0;
 
-                for (let horas of Object.values(data.resumen)) {
-                    let h = Number(horas);
-                    if (!isNaN(h)) totalHoras += h;
-                }
+            let elem = document.getElementById("todayRecords");
+            if (!elem) return;
 
-                let elem = document.getElementById("todayRecords");
-                if (elem) elem.textContent = totalHoras.toFixed(2);
-            }
+            // data ya es un entero
+            elem.textContent = data;
+
         })
         .catch(error => console.error("Error todayRecords:", error));
 }

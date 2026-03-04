@@ -82,6 +82,17 @@ class AdminController
     }
 
     // =========================
+    // Fichajes hoy (total)
+    // =========================
+    public function fichajeHoy(): void
+    {
+        header('Content-Type: application/json');
+
+        $total = $this->fichajeModel->contarFichajesHoy();
+        echo json_encode($total);
+    }
+
+    // =========================
     // Resumen diario
     // =========================
     public function resumenDiario(): void
@@ -217,6 +228,7 @@ switch ($action) {
     case 'resumenMensual': $adminController->resumenMensual(); break;
     case 'exportarCSV': $adminController->exportarCSV(); break;
     case 'listarUsuarios': $adminController->listarUsuarios(); break;
+    case 'fichajeHoy' : $adminController->fichajeHoy(); break;
     default:
         header('Content-Type: application/json');
         echo json_encode(['status'=>'error','message'=>'Acción no válida']);

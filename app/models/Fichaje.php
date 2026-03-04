@@ -119,6 +119,21 @@ class Fichaje
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function contarFichajesHoy(): int
+    {
+        $hoy = date('Y-m-d');
+
+        $sql = "SELECT COUNT(*) 
+                FROM fichajes 
+                WHERE DATE(fecha_hora) = :hoy";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':hoy', $hoy);
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
+    }
+
     /* =====================================================
        Calcular horas trabajadas de un usuario por fecha
        Devuelve array: ['horas_trabajadas'=>x,'horas_descanso'=>y]
