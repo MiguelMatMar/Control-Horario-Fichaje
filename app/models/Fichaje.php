@@ -52,30 +52,53 @@ class Fichaje
        Registrar un fichaje
        tipos: 'entrada','salida','inicio_descanso','fin_descanso'
     ===================================================== */
-    public function registrar(int $userId, string $tipo): bool
-    {
-        // Validar tipo
-        $tiposValidos = ['entrada','salida','inicio_descanso','fin_descanso'];
-        if (!in_array($tipo, $tiposValidos)) {
-            throw new Exception("Tipo de fichaje inválido");
-        }
+public function registrar(int $userId, string $tipo): bool{
+    $tiposValidos = ['entrada','salida','inicio_descanso','fin_descanso'];
 
-        // Evitar doble fichaje consecutivo
-        $ultimo = $this->ultimoFichaje($userId);
-        if ($ultimo && $ultimo['tipo'] === $tipo) {
-            throw new Exception("No se puede registrar el mismo fichaje consecutivo");
-        }
-
-        // Insertar fichaje
-        $sql = "INSERT INTO fichajes (user_id, tipo, fecha_hora) 
-                VALUES (:user_id, :tipo, NOW())";
-        $stmt = $this->db->prepare($sql);
-
-        return $stmt->execute([
-            ':user_id' => $userId,
-            ':tipo'    => $tipo
-        ]);
+    if (!in_array($tipo, $tiposValidos)) {
+        throw new Exception("Tipo de fichaje inválido");
     }
+
+    $ultimo = $this->ultimoFichaje($userId);
+    $ultimoTipo = $ultimo['tipo'] ?? 'ninguno';
+
+    switch ($tipo) {
+
+        case 'entrada':
+            if ($ultimoTipo !== 'ninguno' && $ultimoTipo !== 'salida') {
+                throw new Exception("Ya tienes una jornada iniciada.");
+            }
+            break;
+
+        case 'inicio_descanso':
+            if (!in_array($ultimoTipo, ['entrada','fin_descanso'])) {
+                throw new Exception("No puedes iniciar descanso ahora.");
+            }
+            break;
+
+        case 'fin_descanso':
+            if ($ultimoTipo !== 'inicio_descanso') {
+                throw new Exception("No estás en descanso.");
+            }
+            break;
+
+        case 'salida':
+            if (!in_array($ultimoTipo, ['entrada','fin_descanso'])) {
+                throw new Exception("No puedes fichar salida ahora.");
+            }
+            break;
+    }
+
+    $sql = "INSERT INTO fichajes (user_id, tipo, fecha_hora) 
+            VALUES (:user_id, :tipo, NOW())";
+
+    $stmt = $this->db->prepare($sql);
+
+    return $stmt->execute([
+        ':user_id' => $userId,
+        ':tipo'    => $tipo
+    ]);
+}
 
     /* =====================================================
        Obtener último fichaje de un usuario
