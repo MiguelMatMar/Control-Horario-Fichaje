@@ -1,9 +1,10 @@
 <?php
 if (session_status() == PHP_SESSION_NONE) session_start();
 
-// 1. CARGA DE MODELOS
+//CARGA DE MODELOS
 require_once __DIR__ . '/../../models/User.php';
 require_once __DIR__ . '/../../models/Fichaje.php';
+require_once __DIR__ . '/../../models/EstadoUsuario.php';
 
 
 if (!isset($_SESSION['user_id'])) {
@@ -14,13 +15,16 @@ if (!isset($_SESSION['user_id'])) {
 $fichajeModel = new Fichaje();
 $userId = $_SESSION['user_id'];
 
-// 2. OBTENER DATOS DEL ESTADO ACTUAL
+$estadoModel = new EstadoUsuario();
+$estadoUsuario = $estadoModel->getEstado($_SESSION['user_id']);
+
+//OBTENER DATOS DEL ESTADO ACTUAL
 $ultimoFichaje = $fichajeModel->ultimoFichaje($userId);
 $tipoUltimo = $ultimoFichaje ? $ultimoFichaje['tipo'] : 'ninguno';
 $resumenHoy = $fichajeModel->calcularHorasPorFecha($userId, date('Y-m-d'));
 $historial = $fichajeModel->getFichajes($userId, date('Y-m-d', strtotime('-7 days')), date('Y-m-d'));
 
-// 3. LÓGICA DE ESTADO
+//LÓGICA DE ESTADO
 $estadoTexto = "No iniciado";
 $estadoClase = "tag-pending";
 
@@ -136,6 +140,10 @@ if (in_array($tipoUltimo, ['entrada', 'fin_descanso'])) {
     // Variable global para el JS externo
     window.ultimoTipoGlobal = "<?php echo $tipoUltimo; ?>";
     window.historialEmpleado = <?php echo json_encode(array_reverse($historial)); ?>;
+    window.estadoUsuario = {
+        tipoUltimo: "<?php echo $estadoUsuario['tipo_ultimo']; ?>",
+        segundosActuales: <?php echo $estadoUsuario['segundos_actuales']; ?>
+    };
 </script>
 <script src="/public/assets/js/empleado.js"></script>
 </body>
