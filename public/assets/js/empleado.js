@@ -20,14 +20,14 @@ function iniciarCronometro() {
     // Detener interval si existe
     if(cronometroInterval) clearInterval(cronometroInterval);
 
-    // Restaurar tiempo desde localStorage si existe
-    let tiempoGuardado = localStorage.getItem('ultimoFichajeSegundos');
+    // Restaurar tiempo desde sessionStorage si existe
+    let tiempoGuardado = sessionStorage.getItem('ultimoFichajeSegundos');
     if(tiempoGuardado) ultimoFichajeSegundos = parseInt(tiempoGuardado, 10);
 
     if(['entrada','fin_descanso'].includes(ultimoTipo)){
         cronometroInterval = setInterval(() => {
             ultimoFichajeSegundos++;
-            localStorage.setItem('ultimoFichajeSegundos', ultimoFichajeSegundos); // Guardar tiempo
+            sessionStorage.setItem('ultimoFichajeSegundos', ultimoFichajeSegundos); // Guardar tiempo
             let h = Math.floor(ultimoFichajeSegundos / 3600).toString().padStart(2,'0');
             let m = Math.floor((ultimoFichajeSegundos % 3600) / 60).toString().padStart(2,'0');
             let s = (ultimoFichajeSegundos % 60).toString().padStart(2,'0');
@@ -80,7 +80,7 @@ async function ejecutarFichaje(tipo) {
                 // Pausa: detener cronómetro y guardar tiempo
                 if(cronometroInterval) {
                     clearInterval(cronometroInterval);
-                    localStorage.setItem('ultimoFichajeSegundos', ultimoFichajeSegundos);
+                    sessionStorage.setItem('ultimoFichajeSegundos', ultimoFichajeSegundos);
                     setTimeout(() => location.reload(), 100);
                 }
             } else if(tipo === 'fin_descanso') {
@@ -90,7 +90,7 @@ async function ejecutarFichaje(tipo) {
             } else if(tipo === 'salida') {
                 // Salida: detener cronómetro, limpiar localStorage y recargar página
                 if(cronometroInterval) clearInterval(cronometroInterval);
-                localStorage.removeItem('ultimoFichajeSegundos');
+                sessionStorage.removeItem('ultimoFichajeSegundos');
                 setTimeout(() => location.reload(), 100); // Pequeño delay para que se vea Swal
             }
 
@@ -156,6 +156,57 @@ logOutBtn.addEventListener('click', async (e) => {
 });
 }
 
+let recordsPerPage = 5; // registros por página
+let currentPage = 1;
+let historial = window.historialEmpleado || [];
+
+function renderTablePage(page = 1) {
+    let tbody = document.querySelector(".admin-table tbody");
+    if (!tbody) return;
+
+    let start = (page - 1) * recordsPerPage;
+    let end = start + recordsPerPage;
+    let pageRecords = historial.slice(start, end);
+
+    tbody.innerHTML = "";
+
+    if (pageRecords.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="2">No hay registros recientes.</td></tr>`;
+        return;
+    }
+
+    pageRecords.forEach(reg => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${new Date(reg.fecha_hora).toLocaleString()}</td>
+                <td><span class="tag-active">${reg.tipo.replace('_', ' ').toUpperCase()}</span></td>
+            </tr>
+        `;
+    });
+
+    // Actualizar botones de paginación
+    document.getElementById("currentPage").textContent = page;
+    document.getElementById("prevPage").disabled = page === 1;
+    document.getElementById("nextPage").disabled = end >= historial.length;
+}
+
+// Botones de paginación
+document.getElementById("prevPage").addEventListener("click", () => {
+    if (currentPage > 1) {
+        currentPage--;
+        renderTablePage(currentPage);
+    }
+});
+
+document.getElementById("nextPage").addEventListener("click", () => {
+    if (currentPage * recordsPerPage < historial.length) {
+        currentPage++;
+        renderTablePage(currentPage);
+    }
+});
+
+// Inicializar
+renderTablePage(currentPage);
 
 // Eventos
 btnEntrada.addEventListener('click', () => ejecutarFichaje('entrada'));

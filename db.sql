@@ -110,6 +110,19 @@ CREATE TABLE exportaciones (
         ON DELETE CASCADE
 );
 
+CREATE TABLE estado_usuario (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL UNIQUE,
+    tipo_ultimo ENUM('entrada','salida','inicio_descanso','fin_descanso','ninguno') DEFAULT 'ninguno',
+    segundos_actuales INT DEFAULT 0,
+    actualizado TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_estado_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+);
+
 -- =========================================================
 -- ÍNDICES PARA RENDIMIENTO
 -- =========================================================

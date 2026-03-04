@@ -1,11 +1,10 @@
 <?php
 if (session_status() == PHP_SESSION_NONE) session_start();
 
-
-
 // 1. CARGA DE MODELOS
 require_once __DIR__ . '/../../models/User.php';
 require_once __DIR__ . '/../../models/Fichaje.php';
+
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
@@ -24,6 +23,8 @@ $historial = $fichajeModel->getFichajes($userId, date('Y-m-d', strtotime('-7 day
 // 3. LÓGICA DE ESTADO
 $estadoTexto = "No iniciado";
 $estadoClase = "tag-pending";
+
+
 
 if (in_array($tipoUltimo, ['entrada', 'fin_descanso'])) {
     $estadoTexto = "En jornada";
@@ -119,6 +120,11 @@ if (in_array($tipoUltimo, ['entrada', 'fin_descanso'])) {
                         <?php endforeach; endif; ?>
                     </tbody>
                 </table>
+                <div class="pagination-controls">
+                    <button id="prevPage">Anterior</button>
+                    <span>Página <span id="currentPage">1</span></span>
+                    <button id="nextPage">Siguiente</button>
+                </div>
             </section>
         </main>
     </div>
@@ -129,6 +135,7 @@ if (in_array($tipoUltimo, ['entrada', 'fin_descanso'])) {
 <script>
     // Variable global para el JS externo
     window.ultimoTipoGlobal = "<?php echo $tipoUltimo; ?>";
+    window.historialEmpleado = <?php echo json_encode(array_reverse($historial)); ?>;
 </script>
 <script src="/public/assets/js/empleado.js"></script>
 </body>
