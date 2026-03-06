@@ -120,28 +120,28 @@ public function registrar(int $userId, string $tipo): bool{
     /* =====================================================
        Obtener todos los fichajes de un usuario (opcional filtro por fecha)
     ===================================================== */
-    public function getFichajes(int $userId, ?string $fechaInicio = null, ?string $fechaFin = null): array
-    {
-        $sql = "SELECT * FROM fichajes WHERE user_id = :user_id";
-        $params = [':user_id' => $userId];
+public function getFichajes(int $userId, ?string $fechaInicio = null, ?string $fechaFin = null): array
+{
+    $sql = "SELECT * FROM fichajes WHERE user_id = :user_id";
+    $params = [':user_id' => $userId];
 
-        if ($fechaInicio) {
-            $sql .= " AND fecha_hora >= :fechaInicio";
-            $params[':fechaInicio'] = $fechaInicio . ' 00:00:00';
-        }
-        if ($fechaFin) {
-            $sql .= " AND fecha_hora <= :fechaFin";
-            $params[':fechaFin'] = $fechaFin . ' 23:59:59';
-        }
-
-        $sql .= " ORDER BY fecha_hora ASC";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if ($fechaInicio) {
+        // Forzamos el inicio del día
+        $sql .= " AND fecha_hora >= :fechaInicio";
+        $params[':fechaInicio'] = date('Y-m-d 00:00:00', strtotime($fechaInicio));
+    }
+    if ($fechaFin) {
+        // Forzamos el final del día hasta el último segundo
+        $sql .= " AND fecha_hora <= :fechaFin";
+        $params[':fechaFin'] = date('Y-m-d 23:59:59', strtotime($fechaFin));
     }
 
+    $sql .= " ORDER BY fecha_hora ASC";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute($params);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
     public function contarFichajesHoy(): int
     {
         $hoy = date('Y-m-d');
@@ -231,67 +231,7 @@ public function registrar(int $userId, string $tipo): bool{
     /* =====================================================
        Calcular resumen genérico (diario, semanal o mensual)
     ===================================================== */
-    private function calcularResumen(array $fichajes): array
-    {
-        $resumen = [];
-        $diario = [];
 
-        foreach ($fichajes as $f) {
-            $fecha = date('Y-m-d', strtotime($f['fecha_hora']));
-            if (!isset($diario[$fecha])) {
-                $diario[$fecha] = [
-                    'entrada' => null,
-                    'salida' => null,
-                    'descanso' => 0
-                ];
-            }
-
-            switch ($f['tipo']) {
-                case 'entrada':
-                    $diario[$fecha]['entrada'] = $f['fecha_hora'];
-                    break;
-                case 'salida':
-                    $diario[$fecha]['salida'] = $f['fecha_hora'];
-                    break;
-                case 'inicio_descanso':
-                    $diario[$fecha]['descanso_inicio'] = $f['fecha_hora'];
-                    break;
-                case 'fin_descanso':
-                    if (isset($diario[$fecha]['descanso_inicio'])) {
-                        $diario[$fecha]['descanso'] += (strtotime($f['fecha_hora']) - strtotime($diario[$fecha]['descanso_inicio']))/3600;
-                        unset($diario[$fecha]['descanso_inicio']);
-                    }
-                    break;
-            }
-        }
-
-        // Calcular horas trabajadas por día y totales
-        $totalHoras = 0;
-        $totalDescanso = 0;
-
-        foreach ($diario as $fecha => $d) {
-            if ($d['entrada'] && $d['salida']) {
-                $horasDia = (strtotime($d['salida']) - strtotime($d['entrada']))/3600 - $d['descanso'];
-                $horasDia = max($horasDia, 0);
-            } else {
-                $horasDia = 0;
-            }
-
-            $resumen[$fecha] = [
-                'horas_trabajadas' => round($horasDia,2),
-                'horas_descanso'   => round($d['descanso'],2)
-            ];
-
-            $totalHoras += $horasDia;
-            $totalDescanso += $d['descanso'];
-        }
-
-        return [
-            'resumen_diario' => $resumen,
-            'total_horas_trabajadas' => round($totalHoras,2),
-            'total_horas_descanso'   => round($totalDescanso,2)
-        ];
-    }
 
     /* =====================================================
        Horas extraordinarias
@@ -303,4 +243,53 @@ public function registrar(int $userId, string $tipo): bool{
         $horasExtra = $resumen['horas_trabajadas'] - 8;
         return max(round($horasExtra,2),0);
     }
+private function calcularResumen(array $fichajes): array
+{
+    if (empty($fichajes)) return ['total_horas_trabajadas' => 0];
+
+    $totalSegundos = 0;
+    $entradaActual = null;
+    $inicioDescanso = null;
+    $descontarDescanso = 0;
+
+    foreach ($fichajes as $f) {
+        $time = strtotime($f['fecha_hora']);
+        $tipo = $f['tipo'];
+
+        if ($tipo === 'entrada') {
+            $entradaActual = $time;
+            $descontarDescanso = 0;
+        } 
+        elseif ($tipo === 'inicio_descanso' && $entradaActual) {
+            $inicioDescanso = $time;
+        } 
+        elseif ($tipo === 'fin_descanso' && $inicioDescanso) {
+            $descontarDescanso += ($time - $inicioDescanso);
+            $inicioDescanso = null;
+        } 
+        elseif ($tipo === 'salida' && $entradaActual) {
+            $totalSegundos += ($time - $entradaActual) - $descontarDescanso;
+            $entradaActual = null;
+            $inicioDescanso = null;
+        }
+    }
+
+    return ['total_horas_trabajadas' => round(max($totalSegundos / 3600, 0), 2)];
+}
+public function totalHistorico(int $userId): array
+{
+    // Traemos TODO sin filtros de fecha
+    $sql = "SELECT tipo, fecha_hora FROM fichajes WHERE user_id = :user_id ORDER BY fecha_hora ASC";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([':user_id' => $userId]);
+    $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // DEBUG: Si quieres ver si llegan datos, puedes hacer un: die(var_dump($res));
+    return $this->calcularResumen($res);
+}
+/**
+ * Método auxiliar para obtener todos los fichajes (sin filtros)
+ * Si no se pasan fechas, el método getFichajes ya funciona, 
+ * pero asegúrate de que sea consistente.
+ */
 }

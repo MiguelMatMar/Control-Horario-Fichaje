@@ -95,12 +95,46 @@ if (in_array($tipoUltimo, ['entrada', 'fin_descanso'])) {
                         </div>
                     </div>
                 </article>
+<article class="admin-card day-summary-modern">
+    <div class="summary-header">
+        <h3><i class="fas fa-chart-line"></i> Resumen de Actividad</h3>
+        <span class="badge-live">Actualizado en vivo</span>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-box hoy">
+            <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+            <div class="stat-data">
+                <span class="stat-label">Hoy</span>
+                <strong id="horas-hoy" class="stat-value"><?php echo $resumenHoy['horas_trabajadas'] ?? '0.00'; ?>h</strong>
+            </div>
+        </div>
 
-                <article class="admin-card day-summary">
-                    <h3>Resumen de hoy</h3>
-                    <div class="stat-row"><span>Trabajado:</span> <strong><?php echo $resumenHoy['horas_trabajadas'] ?? '0.00'; ?>h</strong></div>
-                    <div class="stat-row"><span>Descanso:</span> <strong><?php echo $resumenHoy['horas_descanso'] ?? '0.00'; ?>h</strong></div>
-                </article>
+        <div class="stat-box semana">
+            <div class="stat-icon"><i class="fas fa-calendar-week"></i></div>
+            <div class="stat-data">
+                <span class="stat-label">Esta Semana</span>
+                <strong id="horas-semanales" class="stat-value">...</strong>
+            </div>
+        </div>
+
+        <div class="stat-box mes">
+            <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+            <div class="stat-data">
+                <span class="stat-label">Este Mes</span>
+                <strong id="horas-mensuales" class="stat-value">...</strong>
+            </div>
+        </div>
+
+        <div class="stat-box total">
+            <div class="stat-icon"><i class="fas fa-infinity"></i></div>
+            <div class="stat-data">
+                <span class="stat-label">Total Histórico</span>
+                <strong id="horas-historicas" class="stat-value">...</strong>
+            </div>
+        </div>
+    </div>
+</article>
             </section>
 
             <section class="admin-card table-section">
@@ -136,13 +170,16 @@ if (in_array($tipoUltimo, ['entrada', 'fin_descanso'])) {
 
 <?php include __DIR__ . '/../partials/footer.php'; ?>
 
+
 <script>
     // Variable global para el JS externo
     window.ultimoTipoGlobal = "<?php echo $tipoUltimo; ?>";
     window.historialEmpleado = <?php echo json_encode(array_reverse($historial)); ?>;
     window.estadoUsuario = {
         tipoUltimo: "<?php echo $estadoUsuario['tipo_ultimo']; ?>",
-        segundosActuales: <?php echo $estadoUsuario['segundos_actuales']; ?>
+        segundosActuales: <?php echo $estadoUsuario['segundos_actuales']; ?>,
+        // AGREGAMOS ESTO: La fecha y hora del último movimiento desde la DB
+        fechaUltimo: "<?php echo $ultimoFichaje ? $ultimoFichaje['fecha_hora'] : ''; ?>"
     };
 </script>
 <script src="/public/assets/js/empleado.js"></script>
