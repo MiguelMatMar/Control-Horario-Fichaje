@@ -20,30 +20,43 @@ class AuthController
     ===================================================== */
     public function login(): void
     {
+        // Limpieza de buffer para garantizar un JSON puro (evita errores de parseo en JS)
+        if (ob_get_length()) ob_end_clean();
         header('Content-Type: application/json');
 
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
 
-        if (!$email || !$password) {
+        if (empty($email) || empty($password)) {
             echo json_encode([
-                'status' => 'error',
+                'status' => 'error', 
                 'message' => 'Debes completar todos los campos'
             ]);
             exit;
         }
 
-        $user = $this->userModel->verifyPassword($email, $password);
+        // Buscamos al usuario en la base de datos
+        $user = $this->userModel->findByEmail($email);
 
-        if (!$user) {
+        // 1. Validar si el usuario existe y la contraseña es correcta
+        if (!$user || !password_verify($password, $user['password'])) {
             echo json_encode([
-                'status' => 'error',
-                'message' => 'Email o contraseña incorrectos, o usuario inactivo'
+                'status' => 'error', 
+                'message' => 'Email o contraseña incorrectos'
             ]);
             exit;
         }
 
-        // Guardar sesión
+        // 2. Validar si la cuenta está activa (activo == 1)
+        if (!(int)$user['activo']) {
+            echo json_encode([
+                'status' => 'error', 
+                'message' => 'Cuenta desactivada. Contacta con un administrador.'
+            ]);
+            exit;
+        }
+
+        // 3. Crear sesión si todo es correcto
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['nombre']  = $user['nombre'];
         $_SESSION['role_id'] = $user['role_id'];
@@ -51,8 +64,9 @@ class AuthController
         echo json_encode([
             'status' => 'success',
             'message' => 'Login correcto',
-            'role'   => $user['role_id'] // opcional para redirección frontend
+            'role'   => $user['role_id']
         ]);
+        exit;
     }
 
     /* =====================================================
