@@ -54,7 +54,7 @@ function formatTiempo(segundos) {
 async function cargarResumenesCards() {
     try {
         // Añadimos timestamp para evitar caché
-        const resp = await fetch('../app/controllers/FichajeController.php?action=resumen_completo&t=' + Date.now());
+        const resp = await fetch('/app/controllers/FichajeController.php?action=resumen_completo&t=' + Date.now());
         const res = await resp.json();
         
         if (res.status === 'success') {
@@ -106,7 +106,7 @@ function iniciarCronometro() {
 // Nueva función para no crear conflictos con la existente pero mejorar la sincronía
 async function actualizarEstadoUsuarioSync(segundos) {
     try {
-        await fetch('../app/controllers/EstadoController.php?action=updateEstado', {
+        await fetch('/app/controllers/EstadoController.php?action=updateEstado', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({
@@ -123,7 +123,7 @@ async function actualizarEstadoUsuarioSync(segundos) {
 
 async function ejecutarFichaje(tipo) {
     try {
-        const response = await fetch("../app/controllers/FichajeController.php?action=registrar", {
+        const response = await fetch("/app/controllers/FichajeController.php?action=registrar", {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({ 'tipo': tipo })
@@ -173,7 +173,7 @@ async function ejecutarFichaje(tipo) {
 
 async function actualizarEstadoUsuario() {
     try {
-        await fetch('../app/controllers/EstadoController.php?action=updateEstado', {
+        await fetch('/app/controllers/EstadoController.php?action=updateEstado', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({
@@ -222,7 +222,7 @@ function renderTablePage(page = 1) {
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Cargar estado inicial desde DB
     try {
-        const resp = await fetch('../app/controllers/EstadoController.php?action=getEstado');
+        const resp = await fetch('/app/controllers/EstadoController.php?action=getEstado');
         const data = await resp.json();
         
         if (data.status === 'success') {
