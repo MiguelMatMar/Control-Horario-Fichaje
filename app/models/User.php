@@ -105,6 +105,39 @@ class User
         return $user;
     }
 
+    public function setEstado($id,$estado){
+
+        $sql="UPDATE users SET activo=:estado WHERE id=:id";
+
+        $stmt=$this->db->prepare($sql);
+
+        $stmt->bindParam(":estado",$estado);
+        $stmt->bindParam(":id",$id);
+
+        return $stmt->execute();
+
+    }
+
+    public function updateUser($id, $nombre, $email, $password = null) {
+        if ($password) {
+            $password = password_hash($password, PASSWORD_DEFAULT);
+            $sql = "UPDATE users SET nombre=:nombre, email=:email, password=:password WHERE id=:id";
+        } else {
+            $sql = "UPDATE users SET nombre=:nombre, email=:email WHERE id=:id";
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(":nombre", $nombre);
+        $stmt->bindParam(":email", $email);
+        $stmt->bindParam(":id", $id);
+
+        if ($password) {
+            $stmt->bindParam(":password", $password);
+        }
+
+        return $stmt->execute(); 
+    }
+
     /* =====================================================
        OBTENER TODOS (ADMIN)
     ===================================================== */
@@ -118,6 +151,35 @@ class User
             ORDER BY u.created_at DESC";
         $stmt = $this->db->query($sql);
 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getFilteredUsers(string $nombre = '', string $email = '', string $rol = ''): array
+    {
+        // Construimos la consulta base
+        $sql = "SELECT u.id, u.nombre, u.email, u.activo, r.nombre AS rol 
+                FROM users u 
+                JOIN roles r ON u.role_id = r.id WHERE 1=1";
+        
+        $params = [];
+
+        if (!empty($nombre)) {
+            $sql .= " AND u.nombre LIKE :nombre";
+            $params[':nombre'] = "%$nombre%";
+        }
+        if (!empty($email)) {
+            $sql .= " AND u.email LIKE :email";
+            $params[':email'] = "%$email%";
+        }
+        if (!empty($rol)) {
+            $sql .= " AND u.role_id = :rol";
+            $params[':rol'] = $rol;
+        }
+
+        $sql .= " ORDER BY u.id DESC";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
