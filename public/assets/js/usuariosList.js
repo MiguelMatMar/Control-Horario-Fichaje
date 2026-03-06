@@ -8,27 +8,17 @@ function escapeHTML(str) {
 }
 
 function loadUsers(page = 1) {
-    currentPage = page;
-    let nombre = encodeURIComponent(document.getElementById("filterNombre")?.value || "");
-    let email = encodeURIComponent(document.getElementById("filterEmail")?.value || "");
-    let rol = encodeURIComponent(document.getElementById("filterRol")?.value || "");
+    const nombre = document.getElementById("filterNombre").value;
+    const email = document.getElementById("filterEmail").value;
+    const rol = document.getElementById("filterRol").value;
 
-    fetch(`/app/controllers/UsuarioController.php?action=listUsers&page=${page}&nombre=${nombre}&email=${email}&rol=${rol}`)
-        .then(res => res.text()) 
-        .then(text => {
-            try {
-                let data = JSON.parse(text);
-                if (data.status === "success") {
-                    renderUsers(data.users); 
-                    renderPagination(data.totalPages, page);
-                } else {
-                    console.error("Error del servidor:", data.message);
-                }
-            } catch (e) {
-                console.error("El servidor no devolvió un JSON válido:", text);
-            }
-        })
-        .catch(err => console.error("Error de conexión:", err));
+    const url = `/app/controllers/UsuarioController.php?action=listUsers&page=${page}&nombre=${encodeURIComponent(nombre)}&email=${encodeURIComponent(email)}&rol=${encodeURIComponent(rol)}`;
+
+    fetch(url)
+    .then(res => res.json())
+    .then(data => {
+        renderUsers(data.users);
+    });
 }
 
 function renderUsers(users) {

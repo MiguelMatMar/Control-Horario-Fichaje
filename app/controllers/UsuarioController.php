@@ -43,8 +43,17 @@ class UsuarioController
 
     public function listUsersJSON(): void
     {
+        if (ob_get_length()) ob_end_clean();
         header('Content-Type: application/json');
-        $usuarios = $this->userModel->getAll();
+
+        // Capturamos los filtros del GET
+        $nombre = $_GET['nombre'] ?? '';
+        $email  = $_GET['email'] ?? '';
+        $rol    = $_GET['rol'] ?? '';
+
+        // Llamamos a la nueva función del modelo
+        $usuarios = $this->userModel->getFilteredUsers($nombre, $email, $rol);
+
         echo json_encode([
             'status' => 'success',
             'users' => $usuarios,
