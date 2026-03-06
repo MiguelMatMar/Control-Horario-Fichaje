@@ -105,6 +105,39 @@ class User
         return $user;
     }
 
+    public function setEstado($id,$estado){
+
+        $sql="UPDATE users SET activo=:estado WHERE id=:id";
+
+        $stmt=$this->db->prepare($sql);
+
+        $stmt->bindParam(":estado",$estado);
+        $stmt->bindParam(":id",$id);
+
+        return $stmt->execute();
+
+    }
+
+    public function updateUser($id, $nombre, $email, $password = null) {
+        if ($password) {
+            $password = password_hash($password, PASSWORD_DEFAULT);
+            $sql = "UPDATE users SET nombre=:nombre, email=:email, password=:password WHERE id=:id";
+        } else {
+            $sql = "UPDATE users SET nombre=:nombre, email=:email WHERE id=:id";
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(":nombre", $nombre);
+        $stmt->bindParam(":email", $email);
+        $stmt->bindParam(":id", $id);
+
+        if ($password) {
+            $stmt->bindParam(":password", $password);
+        }
+
+        return $stmt->execute(); 
+    }
+
     /* =====================================================
        OBTENER TODOS (ADMIN)
     ===================================================== */

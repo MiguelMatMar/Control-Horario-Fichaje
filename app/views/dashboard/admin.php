@@ -61,18 +61,8 @@ $nombreUsuario = htmlspecialchars($_SESSION['nombre'] ?? 'Usuario');
                     </a>
                 </li>
                 <li>
-                    <a href="#" id="menuUsers">
+                    <a href="/../app/views/dashboard/usuariosList.php" id="menuUsers">
                         <span>Usuarios</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" id="menuRecords">
-                        <span>Registros</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span>Informes</span>
                     </a>
                 </li>
             </ul>

@@ -8,7 +8,6 @@ require_once __DIR__ . '/AuthController.php';
 enum roles: int{
     case Admin = 1;
     case Trabajador = 2;
-    case Cliente = 3;
 }
 class UsuarioController
 {
@@ -40,6 +39,50 @@ class UsuarioController
             'status'=>'success',
             'usuarios'=>$usuarios
         ]);
+    }
+
+    public function listUsersJSON(): void
+    {
+        header('Content-Type: application/json');
+        $usuarios = $this->userModel->getAll();
+        echo json_encode([
+            'status' => 'success',
+            'users' => $usuarios,
+            'totalPages' => 1
+        ]);
+    }
+
+    public function editarUsuarioJSON(): void
+    {
+        if (ob_get_length()) ob_end_clean();
+        header('Content-Type: application/json');
+        $data = json_decode(file_get_contents("php://input"), true);
+        $id = $data['id'] ?? 0;
+        $nombre = $data['nombre'] ?? '';
+        $email = $data['email'] ?? '';
+        $password = $data['password'] ?? '';
+
+        if ($this->userModel->updateUser($id, $nombre, $email, $password)) {
+            echo json_encode(['status' => 'success', 'message' => 'Usuario actualizado']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Error al actualizar']);
+        }
+    }
+
+    public function toggleUsuarioJSON(): void
+    {
+        header('Content-Type: application/json');
+        $data = json_decode(file_get_contents("php://input"), true);
+        $id = $data['id'] ?? 0;
+
+        $user = $this->userModel->findById($id);
+        $nuevoEstado = ($user['activo'] == 1) ? 0 : 1;
+
+        if ($this->userModel->setEstado($id, $nuevoEstado)) {
+            echo json_encode(['status' => 'success', 'message' => 'Estado actualizado']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Error al cambiar estado']);
+        }
     }
 
     /* =====================================================
@@ -157,6 +200,15 @@ switch($action){
         break;
     case 'eliminar':
         $usuarioController->eliminar();
+        break;
+    case 'listUsers':
+        $usuarioController->listUsersJSON();
+        break;
+    case 'editarUsuario':
+        $usuarioController->editarUsuarioJSON();
+        break;
+    case 'toggleUsuario':
+        $usuarioController->toggleUsuarioJSON();
         break;
     default:
         header('Content-Type: application/json');
