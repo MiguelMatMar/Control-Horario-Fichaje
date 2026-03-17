@@ -4,38 +4,35 @@ class Database {
     private $pdo;
 
     public function __construct() {
-        // Cargamos las variables del archivo .env manualmente
-        $path = __DIR__ . '/../.env'; // Ajusta la ruta según dónde esté tu .env
-        if (file_exists($path)) {
-            $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-            foreach ($lines as $line) {
-                if (strpos(trim($line), '#') === 0) continue;
-                list($name, $value) = explode('=', $line, 2);
-                $_ENV[trim($name)] = trim($value);
-            }
-        }
-
-        $host = $_ENV['DB_HOST'] ?? '';
-        $db   = $_ENV['DB_NAME'] ?? '';
-        $user = $_ENV['DB_USER'] ?? '';
-        $pass = $_ENV['DB_PASS'] ?? '';
-        $port = $_ENV['DB_PORT'] ?? '20618';
+        // Datos de tu captura de Aiven
+        $host = 'mysql-272af4aa-carlosmumo1717.k.aivencloud.com';
+        $port = '20618'; // Tu puerto específico de Aiven
+        $db   = 'control_horario'; 
+        $user = 'avnadmin';
+        $pass = 'AVNS_62-zJb8yC1sBMbC3eYn';
         $charset = 'utf8mb4';
 
-        // IMPORTANTE para Aiven: Usar el puerto específico y SSL
+        // EL CAMBIO ESTÁ AQUÍ: Se añade port=$port después del host
         $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=$charset";
 
-        $options = [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            // Aiven requiere SSL por defecto en el plan gratuito
-            PDO::MYSQL_ATTR_SSL_CA       => true, 
-        ];
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    // Cambiamos 'true' por este modo para evitar el error de verificación local
+    PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+];
 
-        try {
+try {
             $this->pdo = new PDO($dsn, $user, $pass, $options);
         } catch (PDOException $e) {
-            die("Error de conexión: " . $e->getMessage());
+            // Configuramos la cabecera para que el navegador sepa que es JSON
+            header('Content-Type: application/json');
+            // Enviamos el error real en un formato que el JS pueda leer
+            echo json_encode([
+                "status" => "error",
+                "message" => "Fallo de conexión: " . $e->getMessage()
+            ]);
+            exit; // Detenemos la ejecución
         }
     }
 
@@ -44,5 +41,9 @@ class Database {
             self::$instance = new Database();
         }
         return self::$instance->pdo;
+    }
+
+    public function test(){
+        return ($this->pdo) ? "Todo correcto" : "Error";
     }
 }
