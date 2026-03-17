@@ -4,10 +4,10 @@ class Database {
     private $pdo;
 
     public function __construct() {
-        $host = 'pruebadb.cnqg4w88uem0.eu-north-1.rds.amazonaws.com';
+        $host = 'mysql-272af4aa-carlosmumo1717.k.aivencloud.com';
         $db   = 'control_horario';
-        $user = 'admin';
-        $pass = '13122005Migue!';
+        $user = 'avnadmin';
+        $pass = 'AVNS_D0x7v8vRfHerxKzTv1t';
         $charset = 'utf8mb4';
 
         $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
