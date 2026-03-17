@@ -41,7 +41,18 @@ CREATE TABLE IF NOT EXISTS `exportaciones` (
   KEY `fk_export_admin` (`admin_id`),
   CONSTRAINT `fk_export_admin` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+CREATE TABLE IF NOT EXISTS estado_usuario (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL UNIQUE,
+    tipo_ultimo ENUM('entrada','salida','inicio_descanso','fin_descanso','ninguno') DEFAULT 'ninguno',
+    segundos_actuales INT DEFAULT 0,
+    actualizado TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_estado_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+);
 -- La exportación de datos fue deseleccionada.
 
 -- Volcando estructura para tabla control_horario.fichajes
@@ -102,18 +113,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-CREATE TABLE IF NOT EXISTS estado_usuario (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL UNIQUE,
-    tipo_ultimo ENUM('entrada','salida','inicio_descanso','fin_descanso','ninguno') DEFAULT 'ninguno',
-    segundos_actuales INT DEFAULT 0,
-    actualizado TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
-    CONSTRAINT fk_estado_user
-        FOREIGN KEY (user_id)
-        REFERENCES users(id)
-        ON DELETE CASCADE
-);
+
 -- La exportación de datos fue deseleccionada.
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
